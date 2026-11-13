@@ -37,9 +37,11 @@ describe("resume extraction and validation", () => {
   it("preserves reference names, redacts contact details, and reports extraction errors", async () => {
     const result = await parseResume(Buffer.from("Designed a Figma portfolio case study. Contact me at private@example.com"), "anonymous-17.txt");
     expect(result.filename).toBe("anonymous-17.txt");
+    expect(result.sourceSha256).toMatch(/^[a-f0-9]{64}$/);
     expect(result.extractedText).not.toContain("private@example.com");
     expect(result.extractedText).toContain("[contact redacted]");
     const emptyText = await parseResume(Buffer.from(" \n "), "blank.txt");
     expect(emptyText.extractionStatus).toBe("failed");
+    expect(emptyText.reviewFlags).toContain("No text could be extracted from this file.");
   });
 });

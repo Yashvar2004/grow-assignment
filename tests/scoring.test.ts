@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classify, LCA_CRITERIA, rankCandidates, scoreText, UIUX_CRITERIA, yearsFromText } from "../lib/scoring";
+import { classify, LCA_CRITERIA, rankCandidates, rankPositions, scoreText, UIUX_CRITERIA, yearsFromText } from "../lib/scoring";
 import { insertCandidate, isDuplicateCandidate } from "../lib/pool";
 import type { Candidate } from "../lib/types";
 
@@ -49,6 +49,12 @@ describe("TalentRank deterministic scoring", () => {
     expect(yearsFromText("3 years of relevant experience")).toBe(3);
     expect(yearsFromText("Work experience in design")).toBeNull();
     expect(yearsFromText("100 years of experience" )).toBeNull();
+  });
+  it("assigns numeric positions only to candidates with a known role score", () => {
+    const scored = candidate("C-1", lcaResume);
+    const noEvidence = candidate("C-2", "");
+    const failed = { ...scored, id: "C-3", extractionStatus: "failed" as const };
+    expect([...rankPositions([noEvidence, failed, scored], "lca")]).toEqual([["C-1", 1]]);
   });
   it("ranks by role score deterministically and breaks ties by ID", () => {
     const pool = [candidate("C-2", lcaResume), candidate("C-1", lcaResume), candidate("C-3", unrelatedResume)];

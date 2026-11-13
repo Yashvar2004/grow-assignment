@@ -10,7 +10,8 @@
     "start": "next start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "process:dataset": "tsx scripts/process-dataset.ts"
+    "process:dataset": "tsx scripts/process-dataset.ts",
+    "phase5:shadow": "tsx scripts/phase5-shadow.ts"
   },
   "dependencies": {
     "lucide-react": "^1.72.0",

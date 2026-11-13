@@ -39,7 +39,7 @@ export async function parseResume(bytes: Buffer, filename: string): Promise<Cand
   const normalized = extractedText.replace(/[\t ]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
   const scores = scoreText(normalized);
   const flags: string[] = [];
-  if (status === "failed") flags.push(message ?? "Extraction failed");
+  if (status === "failed") flags.push(message?.trim() ? message : "No text could be extracted from this file.");
   if (yearsFromText(normalized) === null) flags.push("Experience duration not verified");
   if (scores.lcaCriteria.find((item) => item.id === "experience")?.missing.some((item) => item.includes("Linked JD asks"))) flags.push("Linked JD requirement for independent LCA experience needs review");
   if (normalized.length > 0 && normalized.length < 180) flags.push("Very short extracted text; review source file");
@@ -52,7 +52,7 @@ export async function parseResume(bytes: Buffer, filename: string): Promise<Cand
   const uiuxScore = scores.uiux.score;
   const extractionConfidence = normalized.length === 0 ? 0 : Math.min(98, Math.max(25, Math.round(40 + Math.min(2500, normalized.length) / 50)));
   return {
-    id, filename, source: `upload:${filename}`, createdAt: new Date().toISOString(), extractedText, normalizedText: normalized,
+    id, filename, source: `upload:${filename}`, sourceSha256: createHash("sha256").update(bytes).digest("hex"), createdAt: new Date().toISOString(), extractedText, normalizedText: normalized,
     education: pickLines(normalized, /\b(?:bachelor|master|ph\.?d|degree|university|college|institute|education)\b/i),
     experience: pickLines(normalized, /\b(?:experience|intern|employment|professional|engineer|designer|analyst|consultant|manager)\b/i),
     projects: pickLines(normalized, /\b(?:project|case study|assessment|model|designed|developed|research)\b/i),

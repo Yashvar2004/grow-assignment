@@ -90,6 +90,11 @@ export function rankCandidates(candidates: Candidate[], role: Role): Candidate[]
   return [...candidates].sort((a, b) => (b[field] ?? -1) - (a[field] ?? -1) || a.id.localeCompare(b.id));
 }
 
+export function rankPositions(candidates: Candidate[], role: Role): Map<string, number> {
+  const field = role === "lca" ? "lcaScore" : "uiuxScore";
+  return new Map(rankCandidates(candidates, role).filter((candidate) => candidate.extractionStatus !== "failed" && candidate[field] !== null).map((candidate, index) => [candidate.id, index + 1]));
+}
+
 export function yearsFromText(text: string): number | null {
   const values = [...text.matchAll(/(\d+(?:\.\d+)?)\s*\+?\s*(?:years?|yrs?)(?:\s+(?:of\s+)?(?:relevant\s+)?experience)?/gi)].map((m) => Number(m[1]));
   const valid = values.filter((value) => value >= 0 && value <= 60);

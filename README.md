@@ -4,24 +4,15 @@ Intelligent Resume Screening & Candidate Ranking. This is an evidence organizer 
 
 ## Workspace and dataset status
 
-The workspace started empty. No resumes from the linked Zoho WorkDrive folder were available locally, so the checked-in seed file at `data/candidates.json` intentionally contains zero candidate records. Dashboard counts therefore start at zero. The app does not fabricate the assignment’s 47 resumes or their rankings.
+The downloaded assignment dataset is present under data/resumes/Software Development Assignment Resumes/. It contains 47 original DOCX files. Source and target inventories were checked and all 47 copies matched their originals by SHA-256. No source files were renamed or edited.
 
-After downloading the supplied files, place the original PDF, DOCX, or TXT files in:
+The latest processing run accounts for all 47 files: 46 extracted successfully, 1 failed because it is a blank DOCX, 0 partial, 0 duplicate, 0 OCR-needed, and 0 unsupported format. The blank file remains in data/candidates.json, data/candidates.csv, and data/processing-report.json with its original filename, source path, source hash, candidate reference, failure reason, and evidence reference. Its LCA and UI/UX scores are null and it is marked unscored in the JSON, CSV, and processing report. All 46 successfully extracted records are evaluated independently for both roles. Under the current missing-evidence rules, 22 have no detectable LCA criterion evidence and therefore no LCA fit score, and 3 have no detectable UI/UX criterion evidence and therefore no UI/UX fit score; these remain visible with unknown scores and no numeric rank for that role. Other role scores and ranks are shown when evidence supports a score. A complete per-file audit is in data/processing-report.json; evidence-backed candidate data is in data/candidates.json and the tabular export is in data/candidates.csv.
 
-```text
-data/resumes/
-```
+The resume directory is excluded from Git so original resumes are not accidentally published. PDF, DOCX, and TXT files are parsed; every other non-marker file is still included in the audit as an extraction failure. The root .gitkeep is the only excluded file. To regenerate the seed JSON, CSV, and processing report after changing the source dataset, run npm run process:dataset.
 
-The folder is excluded from Git so original resumes are not accidentally published. Process every supported file and create the seed JSON, CSV, and extraction report with:
+The processor scans subfolders, retains one record per file, preserves relative filenames and source paths, flags duplicates without dropping records, and writes per-file extraction status, OCR state, source hashes, and candidate evidence references. The report distinguishes the expected total from files found/accounted for; duplicate and OCR counts may overlap extraction statuses. The command exits non-zero when the number of files differs from the assignment target of 47 or any file is unaccounted for. Review the file manifest and failed records before treating the dataset as complete. The browser dashboard loads data/candidates.json as its seed dataset.
 
-```bash
-npm run process:dataset
-```
-
-The script scans subfolders, retains a record for every supplied file (including unsupported formats and extraction failures), preserves the source filename/path, flags duplicate content without dropping records, and reports the expected and processed file counts. Review `data/processing-report.json`, then inspect the generated `data/candidates.json` and `data/candidates.csv`. The browser dashboard loads `data/candidates.json` as its seed data. Rebuild the app after regenerating it.
-
-The linked job description URLs are kept in the interface. Their contents were not available to the workspace inspection tool, so the initial criteria use the detailed requirements supplied in the assignment brief. The LCA methodology explicitly records the brief’s 4–6 year versus linked JD 2–3 years independent LCA experience conflict and follows the linked JD as the primary scoring source.
-
+The linked job description URLs are kept in the interface. Their contents were not available to the workspace inspection tool, so criteria use the detailed requirements supplied in the assignment brief and the previously reported linked-JD experience requirement. The LCA methodology explicitly records the brief's 4-6 year versus linked JD 2-3 years independent LCA experience conflict. The scoring weights and criteria remain those already implemented; verify the linked JD directly before changing any requirement.
 ## Local development
 
 Requires Node.js 22.13 or newer.

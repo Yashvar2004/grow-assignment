@@ -12,6 +12,7 @@ export type Candidate = {
   id: string;
   filename: string;
   source: string;
+  sourceSha256?: string | null;
   createdAt: string;
   extractedText: string;
   normalizedText: string;
